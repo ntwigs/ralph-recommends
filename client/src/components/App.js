@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { compose, withState, lifecycle} from 'recompose'
+import { User } from './User'
 
 const enhance = compose(
   withState('users', 'setUsers', []),
@@ -14,9 +15,6 @@ const enhance = compose(
         const names = await namesData.json()
         return names
       })
-      // const allNamesPromise = [Array(2).fill(0).reduce(async (prev, b) => {
-      // }, [])]
-
 
       const allNames = await Promise.all(allNamesPromise)
       const combined = allNames.reduce((prev, curr) => [...prev, ...curr], [])
@@ -34,5 +32,5 @@ const enhance = compose(
 )
 
 export const App = enhance(({ users }) => {
-  return users.map((user) => <h1>{  user.name }</h1>)
+  return users.map((user) => <User key={ user.id } { ...user }/>)
 }) 
