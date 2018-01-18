@@ -7,7 +7,7 @@ const CustomButton = styled(Button)`
 `
 
 export const User = ({ id, name, surname, gender }) => (
-  <Card width={256}>
+  <Card m={20}>
     <Box p={10}>
       <Subhead>{name}</Subhead>
       <Text children={surname} />
