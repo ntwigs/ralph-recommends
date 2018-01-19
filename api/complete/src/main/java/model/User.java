@@ -24,16 +24,25 @@ public class User {
         this.ratings.add(rating);
     }
 
-    public boolean matches(Rating rating) {
-        boolean test = false;
+    public boolean hasRated(int id) {
+        for (Rating rating : this.ratings) {
+            if (rating.getMovieId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-        for (Rating rating1 : ratings) {
-            if (rating1.getMovieId() == rating.getMovieId() && rating1.getRating() != 0 && rating.getRating() != 0) {
-               test = true;
+    public boolean hasNotRated(int movie_id) {
+        boolean exists = true;
+
+        for (Rating rating : this.ratings) {
+            if (rating.getMovieId() == movie_id) {
+                exists = false;
             }
         }
 
-        return test;
+        return exists;
     }
 
     public Collection<Rating> getRatings() {

@@ -1,34 +1,30 @@
 import * as React from 'react'
 import { Card, Subhead, Text, Box, Button, Row, Column } from 'rebass'
 import styled, { keyframes } from 'styled-components'
-import { fadeInLeft } from 'react-animations'
+import { Link } from 'react-router-dom'
 
 const CustomButton = styled(Button)`
   margin-top: 10px;
 `
 
-const fadeInAnimation = keyframes`${fadeInLeft}`
 
 const CustomSubText = styled(Subhead)`
-  animation: ${fadeInAnimation} 1s ease;
   animation-delay: 1s;
 `
 
 const CustomText = styled(Text)`
-  animation: ${fadeInAnimation} 1s ease;
   animation-delay: 1s;
 `
 
 const CustomCard = styled(Card)`
-  animation: ${fadeInAnimation} 1s ease;
 `
 
-export const User = ({ id, name, surname, gender }) => (
-  <CustomCard m={20}>
+export const User = ({ id, name, surname, gender, onClick }) => (
+  <CustomCard m={20} id={id}>
     <Box p={10}>
       <CustomSubText>{name}</CustomSubText>
       <CustomText children={surname} />
-      <CustomButton children="select" />
+      <CustomButton onClick={onClick} children={<Link to={ `/${id}` } >Select</Link>} />
     </Box>
   </CustomCard>
 )

@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 public class Filehandler {
     public HashMap<Integer, Movie> getMovies() throws IOException {
-        String path = "/home/thunders/Code/school/Java/rec-rec/src/main/resources/movies.csv";
+        String path = "/home/thunders/Code/school/Java/ralph-recommends/api/complete/src/main/resources/x_movies.csv";
         HashMap<Integer, Movie> movies = new HashMap<>();
         Files.lines(Paths.get(path)).skip(1).forEach(movie -> {
 
@@ -30,7 +30,7 @@ public class Filehandler {
     }
 
     public Collection<Rating> getRatings() throws IOException {
-        String path = "/home/thunders/Code/school/Java/rec-rec/src/main/resources/ratings.csv";
+        String path = "/home/thunders/Code/school/Java/ralph-recommends/api/complete/src/main/resources/x_ratings.csv";
         HashSet<Rating> ratings = new HashSet<>();
         Files.lines(Paths.get(path)).skip(1).forEach(rate -> {
             String[] splitRate = rate.split(",");
@@ -40,12 +40,11 @@ public class Filehandler {
             rating.setMovieId(Integer.parseInt(splitRate[1]));
             ratings.add(rating);
         });
-
         return ratings;
     }
 
     public HashMap<Integer, User> getUsers() throws IOException {
-        String path = "/home/thunders/Code/school/Java/rec-rec/src/main/resources/ratings.csv";
+        String path = "/home/thunders/Code/school/Java/ralph-recommends/api/complete/src/main/resources/x_ratings.csv";
         HashMap<Integer, User> users = new HashMap<>();
         HashSet<Integer> ids = new HashSet<>();
 

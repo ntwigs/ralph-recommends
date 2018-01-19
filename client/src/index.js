@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { App } from './components/App'
 import { Provider } from 'rebass'
 import registerServiceWorker from './registerServiceWorker'
+import { BrowserRouter, Route } from 'react-router-dom'
 
-ReactDOM.render(<Provider><App /></Provider>, document.getElementById('root'))
+
+ReactDOM.render(<BrowserRouter><Provider><App /></Provider></BrowserRouter>, document.getElementById('root'))
 registerServiceWorker()

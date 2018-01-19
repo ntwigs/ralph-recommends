@@ -1,12 +1,23 @@
 import * as React from 'react'
-import { compose, withState, lifecycle, branch, renderComponent } from 'recompose'
+import {
+  compose,
+  withState,
+  lifecycle,
+  branch,
+  renderComponent,
+  withHandlers
+} from 'recompose'
 import { User } from './User'
-import { Flex, Box, Text, Fixed} from 'rebass'
+import { Flex, Box, Text, Fixed } from 'rebass'
+import { Recommendations } from './Recommendations'
+import { Route, withRouter } from 'react-router-dom'
+import { Recommendation } from './Recommendation';
 
 const enhance = compose(
   withState('users', 'setUsers', []),
+  withState('recommendations', 'setRec', { recommendations: {}, userRecs: {} }),
   lifecycle({
-    async componentWillMount() {
+    async componentDidMount() {
       const usersData = await fetch('http://localhost:8080/users')
       const users = await usersData.json()
 
@@ -31,20 +42,34 @@ const enhance = compose(
       this.props.setUsers(completeUsers)
     },
   }),
-  branch(({ users }) => !(users.length), renderComponent(() => <h1>Loading</h1>)),
+  branch(({ users }) => !users.length, renderComponent(() => <h1>Loading</h1>)),
+  withHandlers({
+    onClick: ({ setRec }) => async ({ target }) => {
+      const { id } = target.parentElement.parentElement.parentElement
+
+      const response = await fetch(`http://localhost:8080?id=${ id }`) 
+      const recommendations = await response.json()
+
+      const res = await fetch(`http://localhost:8080/recs?id=${ id }`) 
+      const userRecs = await res.json()
+
+      if (response.status === 200) {
+        setRec({recommendations, userRecs})
+      }
+    }
+  }),
 )
 
-export const App = enhance(({ users }) => (
-  <Flex height="100vh">
+export const App = enhance(({ users, recommendations, onClick }) => (
+  <Flex wrap>
     <Box w={1 / 5} px={2}>
-      {users.map(user => <User key={user.id} {...user} />)}
+      {users.map(user => <User key={user.id} {...user} onClick={onClick} />)}
     </Box>
-    <Box w={3 / 4} px={2}>
-      <Fixed right top w={3/4} m={28}>
-        <Text p={1} color="white" bg="blue">
-          Half
-        </Text>
-      </Fixed>
+    <Box w={2 / 5} px={2}>
+        <Recommendations {...recommendations} type='recs' />
     </Box>
+     <Box w={2 / 5} px={2}>
+        <Recommendations {...recommendations} type='userrecs' />
+    </Box>   
   </Flex>
 ))

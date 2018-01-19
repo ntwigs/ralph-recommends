@@ -21,6 +21,10 @@ public class Movie {
         this.id = id;
     }
 
+    public int getId() {
+        return this.id;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

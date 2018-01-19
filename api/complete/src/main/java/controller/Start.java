@@ -4,6 +4,7 @@ import model.*;
 import util.Euclidean;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Start {
@@ -35,29 +36,45 @@ public class Start {
         calculateSimilarity();
         calculateWeighted();
         calculateSimilaritySum();
-        return getMovieRecommendation();
 
+
+        return getMovieRecommendation();
+    }
+
+
+    public HashMap<Integer, Double> recUsers() throws IOException {
+        udb.storeUsers();
+        mdb.storeMovies();
+        rdb.storeRatings();
+
+        addRatingsToUser();
+        calculateSimilarity();
+
+        return similarity;
     }
 
     private void addRatingsToUser() {
-        rdb.getRatings().forEach(rating ->
-                udb.getUser(rating.getUser()).addRating(rating)
-        );
+        rdb.getRatings().forEach(rating -> {
+            udb.getUser(rating.getUser()).addRating(rating);
+        });
     }
 
     private void calculateSimilarity() {
         Euclidean eu = new Euclidean();
-        User user = udb.getUser(id);
+        User userA = udb.getUser(id);
 
-        udb.getUsers().forEach((user_id, userb) -> {
-            if (user_id != id) {
-                double sim = eu.calculate(user, userb);
-                similarity.put(user_id, sim);
-            }
-        });
+        for (User userB : udb.getUsers().values()) {
+            similarity.put(userB.getId(), eu.calculate(userA, userB));
+        }
     }
 
     private void calculateWeighted() {
+        mdb.getMovies().forEach((id, movie) -> {
+            if (!wsdb.containsKey(id)) {
+                wsdb.put(id, 0.0);
+            }
+        });
+
         similarity.forEach((id, sim) -> {
             if (this.id != id) {
                 udb.getUser(id).getRatings().forEach(rating -> {
@@ -75,7 +92,7 @@ public class Start {
     private void calculateSimilaritySum() {
         for (Rating rating : rdb.getRatings()) {
             int userId = rating.getUser();
-            if (userId != id && rating.getRating() != 0) {
+            if (userId != id) {
                 int movieId = rating.getMovieId();
                 double sim = similarity.get(userId);
                 if (simsums.containsKey(movieId)) {
@@ -89,12 +106,15 @@ public class Start {
 
     private HashMap<String, Double> getMovieRecommendation() {
         HashMap<String, Double> recommendations = new HashMap<>();
+        double max = Collections.max(wsdb.values());
 
         simsums.forEach((movie_id, similarity) -> {
-            String title = mdb.getMovies().get(movie_id).getTitle();
-            double weight = wsdb.get(movie_id);
-            double total = weight/similarity;
-            recommendations.put(title, total);
+            if (udb.getUser(this.id).hasNotRated(movie_id)) {
+                String title = mdb.getMovies().get(movie_id).getTitle();
+                double weight = wsdb.get(movie_id);
+                double total = (weight / similarity);
+                recommendations.put(title, total);
+            }
         });
 
         return recommendations;
